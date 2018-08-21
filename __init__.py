@@ -14,7 +14,7 @@ lck_ilvls = threading.Lock()
 
 # Path to files
 json_file_ilvls = "/var/www/ilvls/ilvls/ilvls.json"
-json_file_ilvls = "ilvls.json"
+# json_file_ilvls = "ilvls.json"
 
 @app.route("/")
 def index():
