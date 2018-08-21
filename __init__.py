@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+
+# rady
+
 from flask import Flask, render_template
 import threading
 import json
@@ -10,7 +14,7 @@ lck_ilvls = threading.Lock()
 
 # Path to files
 json_file_ilvls = "/var/www/ilvls/ilvls/ilvls.json"
-# json_file_ilvls = "ilvls.json"
+json_file_ilvls = "ilvls.json"
 
 @app.route("/")
 def index():
@@ -19,10 +23,13 @@ def index():
 @app.route("/ilvls")
 def ilvls():
     lck_ilvls.acquire()
-    with open(json_file_ilvls, 'r') as fichero:
-        data = json.loads(fichero.read())
-        data = sorted(data, key=lambda k: k['ilvl-equipped'], reverse=True)
-    #print(data)
+    try:
+        with open(json_file_ilvls, 'r') as fichero:
+            data = json.loads(fichero.read())
+            data = sorted(data, key=lambda k: k['ilvl-equipped'], reverse=True)
+    except:
+        lck_ilvls.release()
+        return "Not working. Prueba más tarde."
     lck_ilvls.release()
     return render_template('template_ilvls.html', members=data)
 

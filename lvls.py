@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 # rady
@@ -9,12 +8,6 @@ import time
 from datetime import datetime, timedelta
 import urlparse
 import re
-from w3lib.url import safe_url_string
-import threading
-
-# from pymongo import MongoClient
-# client = MongoClient()
-# db = client.locks
 
 print urllib.__version__
 
@@ -54,11 +47,8 @@ def charItems(name):
     logkey = '?fields=items&locale=en_GB&apikey=' + key
     iri = base + name + logkey
     url = iriToUri(iri)
-    print(url)
     req = urllib.urlopen(url)
-    print(req)
     info = json.loads(req.read())
-    print(info)
     return info
 
 def charSttics(name):
@@ -99,7 +89,6 @@ def main(lck):
             for miembro in miembros:
                 try:
                     # ITEM LEVEL...
-                    print(miembro['name'])
                     items = charItems(miembro['name'])
                     miembro['ilvl-bags'] = items['items']['averageItemLevel']
                     miembro['ilvl-equipped'] = items['items']['averageItemLevelEquipped']
@@ -109,7 +98,7 @@ def main(lck):
 
             lck.acquire()
             with open(json_file_ilvls, 'w+') as f:
-                f.write(json.dumps(miembros, ensure_ascii=False).encode('utf8'))
+                f.write(json.dumps(miembros, ensure_ascii=False).encode('utf-8'))
             lck.release()
 
             last_update = datetime.now()
