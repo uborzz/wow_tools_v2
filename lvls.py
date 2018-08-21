@@ -7,6 +7,9 @@ import urllib2 as urllib
 import json
 import time
 from datetime import datetime, timedelta
+import urlparse
+import re
+from w3lib.url import safe_url_string
 import threading
 
 # from pymongo import MongoClient
@@ -19,9 +22,23 @@ print urllib.__version__
 key_file = "/var/www/ilvls/ilvls/publickey_2018"
 json_file_ilvls = "/var/www/ilvls/ilvls/ilvls.json"
 
+# key_file = "publickey_2018"
+# json_file_ilvls = "ilvls.json"
+
+
 key = open(key_file).read()
 base = "https://eu.api.battle.net/wow/character/c'thun/"
 guild_base = "https://eu.api.battle.net/wow/guild/c'thun/By%20the%20rage%20of%20my%20balls"
+
+def urlEncodeNonAscii(b):
+    return re.sub('[\x80-\xFF]', lambda c: '%%%02x' % ord(c.group(0)), b)
+
+def iriToUri(iri):
+    parts= urlparse.urlparse(iri)
+    return urlparse.urlunparse(
+        part.encode('idna') if parti==1 else urlEncodeNonAscii(part.encode('utf-8'))
+        for parti, part in enumerate(parts)
+    )
 
 def guildMembers():
     logkey = '?fields=members&locale=en_US&apikey=' + key
@@ -35,9 +52,13 @@ def guildMembers():
 
 def charItems(name):
     logkey = '?fields=items&locale=en_GB&apikey=' + key
-    url = base + name + logkey
+    iri = base + name + logkey
+    url = iriToUri(iri)
+    print(url)
     req = urllib.urlopen(url)
+    print(req)
     info = json.loads(req.read())
+    print(info)
     return info
 
 def charSttics(name):
@@ -78,6 +99,7 @@ def main(lck):
             for miembro in miembros:
                 try:
                     # ITEM LEVEL...
+                    print(miembro['name'])
                     items = charItems(miembro['name'])
                     miembro['ilvl-bags'] = items['items']['averageItemLevel']
                     miembro['ilvl-equipped'] = items['items']['averageItemLevelEquipped']
@@ -87,7 +109,7 @@ def main(lck):
 
             lck.acquire()
             with open(json_file_ilvls, 'w+') as f:
-                f.write(json.dumps(miembros))
+                f.write(json.dumps(miembros, ensure_ascii=False).encode('utf8'))
             lck.release()
 
             last_update = datetime.now()
