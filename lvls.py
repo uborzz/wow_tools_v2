@@ -57,25 +57,6 @@ def charSttics(name):
     info = json.loads(urllib.urlopen(url).read())
     return info
 
-def date(stamp):
-    dateStr = time.ctime(stamp/1000)
-    return dateStr
-
-def updateHTML(lvls):
-    # Old metodo para crear fichero estatico html.
-    htmlFile = open('datashow.html', 'w')   # CAMBIAR DIRECTORIO!
-    message = "<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /><h3> Ilvls: </h3> Informacion sobre saves de cada player, datos extraidos de la api de battle net, por lo que es posible que la informacion no este 100% correcta/actualizada ya que los updates de blizzard no se realizan cada instante, ademas, hay eventos que se pueden perder en el feed que nos proporcionan. Disculpas por la representacion tan chapucera, es lo mas rapido funcional, sera mejorado.<br>"
-    message = message + "<br><br> Member iLvls (Media máximo inventario - Media Equipado)"
-
-    messUpd = ""
-    for item in lvls:
-        messUpd = messUpd + "<br>" + repr(item) + ": " + repr(lvls[item])
-    message = message + messUpd
-
-    htmlFile.write(message)
-    htmlFile.close()
-
-
 def main(lck):
     tiempo_refresco = 15  # minutos
     last_update = datetime.now() - timedelta(minutes=tiempo_refresco+1)
@@ -104,7 +85,4 @@ def main(lck):
             last_update = datetime.now()
             print("File updated", datetime.strftime(last_update, "%H:%M:%S"))
 
-        # updateHTML(ilvls)
         time.sleep(60)
-
-# ilvls()
