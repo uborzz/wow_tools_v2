@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" media="screen">
     <style type="text/css">
+      .table td {
+        text-align: center;
+      }
+      .table th {
+        text-align: center;
+      }
     </style>
   </head>
   <body>
@@ -12,12 +18,34 @@
       <h1>iLvls info</h1>
       <p>Info personajes miembros Dofitos: Consulta info de los miembros del clan de Wow "By the Rage of my Balls", en servidor C'thun.</p>
       <p>* update v0.1: se traga caracteres no ascii en nombres. sort by ilvl.</p>
+      <p>* update v0.2: +artifact lvl. filtro gente rango inferior a Guru. table aspect.</p>
         <br>
       <h4>Name - Lvl - iLvl Ekipado, iLvl Bolsas</h4>
       <div class="container">
+        <table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">Name</th>
+      <th scope="col">Lvl</th>
+      <th scope="col">iLvl equipado</th>
+      <th scope="col">iLvl en bolsas</th>
+      <th scope="col">artifact Lvl neck</th>
+      <th scope="col">achievement points</th>
+    </tr>
+  </thead>
+  <tbody>
         {% for member in members %}
-      <li>{{member['name']}} - {{member['level']}} - {{member['ilvl-equipped']}}, {{member['ilvl-bags']}}</li>
+          <tr>
+            <th scope="row">{{member['name']}} </th>
+            <td>{{member['level']}}</td>
+            <td>{{member['ilvl-equipped']}}</td>
+            <td>{{member['ilvl-bags']}}</td>
+            <td>{{member['artifact-lvl']}}</td>
+            <td>{{member['achievementPoints']}}</td>
+          </tr>
         {% endfor %}
+              </tbody>
+  </table>
         </div>
     </div>
     <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>

@@ -26,12 +26,14 @@ def ilvls():
     try:
         with open(json_file_ilvls, 'r') as fichero:
             data = json.loads(fichero.read())
-            data = sorted(data, key=lambda k: k['ilvl-equipped'], reverse=True)
-    except:
+            filtered = [miembro for miembro in data if int(miembro['rank']) <= 1]  # rank 0 GM, 1 ofic. ...
+            ordenado = sorted(filtered, key=lambda k: k['ilvl-equipped'], reverse=True)
+    except Exception as e:
         lck_ilvls.release()
+        print e
         return "Not working. Prueba más tarde."
     lck_ilvls.release()
-    return render_template('template_ilvls.html', members=data)
+    return render_template('template_ilvls.html', members=ordenado)
 
 app_ilvls = threading.Thread(target=lvls.main, args=(lck_ilvls, ))
 app_ilvls.start()

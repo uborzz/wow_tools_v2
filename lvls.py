@@ -41,7 +41,8 @@ def guildMembers():
     # return info['members'][0]
     return [{"name": member['character']['name'],
              "level": member['character']['level'],
-             "achievementPoints": member['character']['achievementPoints']} for member in info['members']]
+             "achievementPoints": member['character']['achievementPoints'],
+             "rank": member['rank']} for member in info['members']]
 
 def charItems(name):
     logkey = '?fields=items&locale=en_GB&apikey=' + key
@@ -73,6 +74,7 @@ def main(lck):
                     items = charItems(miembro['name'])
                     miembro['ilvl-bags'] = items['items']['averageItemLevel']
                     miembro['ilvl-equipped'] = items['items']['averageItemLevelEquipped']
+                    miembro['artifact-lvl'] = items['items']['neck']['azeriteItem']['azeriteLevel']
                     print(miembro)
                 except:
                     print(miembro, 'failed')
