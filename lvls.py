@@ -117,7 +117,7 @@ def main(lck, lck_m):
                     # MYTHICS...
                     stats = charSttics(miembro['name'])
                     counter = counter + 1
-                    print('> Counting dofito {} of {}...'.format(str(counter), len(miembros), miembro['name']))
+                    print('> Counting dofito {} of {}...'.format(str(counter), len(miembros)))
 
                     exp_stats = stats['statistics']['subCategories'][5]['subCategories'][7]['statistics']
                     all_dungeons = [dung for dung in exp_stats if "mythic" in dung['name'].lower()]  # todas kills, OJO tambien raids
