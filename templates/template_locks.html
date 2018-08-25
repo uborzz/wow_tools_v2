@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dofitos dofilock</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <style type="text/css">
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>dofilock BFA</h1>
+    <p>Info locks instances míticas miembros Dofitos: Consulta info de los miembros del clan de Wow "By the Rage of my
+        Balls", en servidor C'thun.</p>
+    <br>
+    <div class="container">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th scope="col" style="width: 20%">dungeon</th>
+                <th scope="col">dofitos lockeados</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for dungeon in dungeons %}
+            <tr>
+                <th scope="row">{{dungeon}}</th>
+                <td>{{", ".join(dungeons[dungeon])}}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+</body>
+</html>
