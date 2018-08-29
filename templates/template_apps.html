@@ -1,21 +1,20 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Python/Flask Apps</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" media="screen">
-    <style type="text/css">
-    </style>
-</head>
-<body>
+{% extends "layout.html" %}
+
+{% block heading %}
+  <title>Python/Flask Apps</title>
+{% endblock %}
+
+{% block content %}
 <div class="container">
     <h1>Uborzz - Python/Flask Apps</h1>
-    <p>Links a apps/visus de programas y scripts</p>
+    <p>Links a apps/visus de programas y scripts para los dofitos</p>
     <br>
     <h3>Apps</h3>
     <div class="container">
-        <li><a href="{{ url_for('ilvls') }}">iLvls</a> - Item lvls Dofitos.</li>
-        <li><a href="{{ url_for('locks') }}">dofilock</a> - Locks Mythics Dofitos.</li>
+        <li><a href="{{ url_for('ilvls') }}">iLvls</a> - Item y artifact lvl de los miembros</li>
+        <li><a href="{{ url_for('locks') }}">dofilock: mythics</a> - Saves semanales de dungeons: Mythics</li>
+        <li><a href="{{ url_for('uldirn') }}">dofilock: uldir normal</a> - Saves de bosses: Uldir Normal</li>
+        <li><a href="{{ url_for('uldirh') }}">dofilock: uldir heroic</a> - Saves de bosses: Uldir Heroic</li>
     </div>
     <br>
     <h4>Vuelta a la roca de guía</h4>
@@ -23,5 +22,4 @@
         <li><a href="http://uborzz.es">Blog: la caja loca</a></li>
     </div>
 </div>
-</body>
-</html>
+{% endblock %}

@@ -12,13 +12,19 @@ app = Flask(__name__)
 # Locks ficheros
 lck_ilvls = threading.Lock()
 lck_mythics = threading.Lock()
+lck_uldir_normal = threading.Lock()
+lck_uldir_heroic = threading.Lock()
 
 # PATH TO FILES
 json_file_ilvls = "/var/www/ilvls/ilvls/ilvls.json"
 json_file_locks = "/var/www/ilvls/ilvls/locks.json"
+json_file_uldir_normal = "/var/www/ilvls/ilvls/uldir_normal.json"
+json_file_uldir_heroic = "/var/www/ilvls/ilvls/uldir_heroic.json"
 
-# json_file_ilvls = "ilvls.json"
-# json_file_locks = "locks.json"
+json_file_ilvls = "ilvls.json"
+json_file_locks = "locks.json"
+json_file_uldir_normal = "uldir_normal.json"
+json_file_uldir_heroic = "uldir_heroic.json"
 
 
 @app.route("/")
@@ -44,22 +50,34 @@ def ilvls():
 
 @app.route("/locks")
 def locks():
+    return peticion_tipo_locks(json_file_locks, lck_mythics, "Mythics")
+
+@app.route("/uldir_normal")
+def uldirn():
+    return peticion_tipo_locks(json_file_uldir_normal, lck_uldir_normal, "Uldir Normal")
+
+@app.route("/uldir_heroic")
+def uldirh():
+    return peticion_tipo_locks(json_file_uldir_heroic, lck_uldir_heroic, "Uldir Heroic")
+
+def peticion_tipo_locks(fichero, lck, titulo=""):
     try:
-        lck_mythics.acquire()
-        with open(json_file_locks, 'r') as fichero:
+        lck.acquire()
+        with open(fichero, 'r') as fichero:
             data = json.loads(fichero.read())
-        lck_mythics.release()
+        lck.release()
         for key in data.keys():
             data[key] = tuple(sorted(data[key]))
     except IOError:
-        lck_mythics.release()
+        lck.release()
         return "Not working. Prueba más tarde."
     except Exception as e:
         print(str(e))
         return "Not working. Prueba más tarde."
-    return render_template('template_locks.html', dungeons=data)
+    return render_template('template_locks.html', dungeons=data, titulo=titulo)
 
-app_ilvls = threading.Thread(target=lvls.main, args=(lck_ilvls, lck_mythics))
+
+app_ilvls = threading.Thread(target=lvls.main, args=(lck_ilvls, lck_mythics, lck_uldir_normal, lck_uldir_heroic))
 app_ilvls.start()
 
 if __name__ == "__main__":

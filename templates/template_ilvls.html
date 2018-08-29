@@ -1,9 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
+{% extends "layout.html" %}
+
+{% block heading %}
     <title>Dofitos iLvls</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" media="screen">
     <style type="text/css">
       .table td {
         text-align: center;
@@ -12,8 +10,9 @@
         text-align: center;
       }
     </style>
-</head>
-<body>
+{% endblock %}
+
+{% block content %}
 <div class="container">
     <h1>iLvls info</h1>
     <p>Info personajes miembros Dofitos: Consulta info de los miembros del clan de Wow "By the Rage of my Balls", en
@@ -50,7 +49,4 @@
     <p>* update v0.1: se traga caracteres no ascii en nombres. sort by ilvl.</p>
     <p>* update v0.2: +artifact lvl. filtro gente rango inferior a Guru. table aspect.</p>
 </div>
-<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
-<script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-</body>
-</html>
+{% endblock %}
