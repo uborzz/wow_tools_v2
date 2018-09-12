@@ -171,13 +171,19 @@ def main(lck, lck_m, lck_uldir_n, lck_uldir_h, lck_pvp):
 
                     pvp_member = dict()
                     pvp_member['name'] = pvp['name']
+                    pvp_member['ts'] = pvp['lastModified']
                     pvp_member['2v2'] = pvp['pvp']['brackets']['ARENA_BRACKET_2v2']
                     pvp_member['3v3'] = pvp['pvp']['brackets']['ARENA_BRACKET_3v3']
 
-                    pvp_member['2v2']['week_ratio'] = formatted_ratio(pvp_member['2v2']['weeklyWon'], pvp_member['2v2']['weeklyPlayed'])
-                    pvp_member['2v2']['season_ratio'] = formatted_ratio(pvp_member['2v2']['seasonWon'], pvp_member['2v2']['seasonPlayed'])
+                    # Chapuza fixea no-actualizacion blizz
+                    if int(pvp_member['ts'])/1000 <= lastWeds:  # rm milis
+                        pvp_member['2v2']['weeklyPlayed'] = 0
+                        pvp_member['3v3']['weeklyPlayed'] = 0
 
+                    pvp_member['2v2']['week_ratio'] = formatted_ratio(pvp_member['2v2']['weeklyWon'], pvp_member['2v2']['weeklyPlayed'])
                     pvp_member['3v3']['week_ratio'] = formatted_ratio(pvp_member['3v3']['weeklyWon'], pvp_member['3v3']['weeklyPlayed'])
+
+                    pvp_member['2v2']['season_ratio'] = formatted_ratio(pvp_member['2v2']['seasonWon'], pvp_member['2v2']['seasonPlayed'])
                     pvp_member['3v3']['season_ratio'] = formatted_ratio(pvp_member['3v3']['seasonWon'], pvp_member['3v3']['seasonPlayed'])
 
                     pvp_chart.append(pvp_member)
