@@ -176,7 +176,7 @@ def main(lck, lck_m, lck_uldir_n, lck_uldir_h, lck_pvp):
                     pvp_member['3v3'] = pvp['pvp']['brackets']['ARENA_BRACKET_3v3']
 
                     # Chapuza fixea no-actualizacion blizz
-                    if int(pvp_member['ts'])/1000 <= lastWeds:  # rm milis
+                    if pvp_member['ts'] <= lastWeds:  # rm milis
                         pvp_member['2v2']['weeklyPlayed'] = 0
                         pvp_member['3v3']['weeklyPlayed'] = 0
 
