@@ -11,6 +11,8 @@ import re
 
 print urllib.__version__
 
+production = True
+
 # PATH TO FILES
 key_file = "/var/www/ilvls/ilvls/publickey_2018"
 json_file_ilvls = "/var/www/ilvls/ilvls/ilvls.json"
@@ -19,33 +21,38 @@ json_file_dungeonlist = "/var/www/ilvls/ilvls/dungeonlist.json"
 json_file_locks = "/var/www/ilvls/ilvls/locks.json"
 json_file_uldir_normal = "/var/www/ilvls/ilvls/uldir_normal.json"
 json_file_uldir_heroic = "/var/www/ilvls/ilvls/uldir_heroic.json"
+json_file_stats_extra_info = "/var/www/ilvls/ilvls/stats_extra_info.json"
+json_file_pvp = "/var/www/ilvls/ilvls/pvp.json"
 
-key_file = "publickey_2018"
-json_file_ilvls = "ilvls.json"
-json_file_mithics = "mithics.json"
-json_file_dungeonlist = "dungeonlist.json"
-json_file_locks = "locks.json"
-json_file_uldir_normal = "uldir_normal.json"
-json_file_uldir_heroic = "uldir_heroic.json"
+if not production:
+    key_file = "publickey_2018"
+    json_file_ilvls = "ilvls.json"
+    json_file_mithics = "mithics.json"
+    json_file_dungeonlist = "dungeonlist.json"
+    json_file_locks = "locks.json"
+    json_file_uldir_normal = "uldir_normal.json"
+    json_file_uldir_heroic = "uldir_heroic.json"
+    json_file_stats_extra_info = "stats_extra_info.json"
+    json_file_pvp = "pvp.json"
 
 key = open(key_file).read()
 base = "https://eu.api.battle.net/wow/character/c'thun/"
 guild_base = "https://eu.api.battle.net/wow/guild/c'thun/By%20the%20rage%20of%20my%20balls"
 
 
-def urlEncodeNonAscii(b):
+def url_encode_non_ascii(b):
     return re.sub('[\x80-\xFF]', lambda c: '%%%02x' % ord(c.group(0)), b)
 
 
-def iriToUri(iri):
-    parts= urlparse.urlparse(iri)
+def iri_to_uri(iri):
+    parts = urlparse.urlparse(iri)
     return urlparse.urlunparse(
-        part.encode('idna') if parti==1 else urlEncodeNonAscii(part.encode('utf-8'))
+        part.encode('idna') if parti == 1 else url_encode_non_ascii(part.encode('utf-8'))
         for parti, part in enumerate(parts)
     )
 
 
-def guildMembers():
+def guild_members():
     logkey = '?fields=members&locale=en_US&apikey=' + key
     url = guild_base + logkey
     req = urllib.urlopen(url)
@@ -53,23 +60,13 @@ def guildMembers():
     # return info['members'][0]
     return [{"name": member['character']['name'],
              "level": member['character']['level'],
-             "achievementPoints": member['character']['achievementPoints'],
              "rank": member['rank']} for member in info['members']]
 
 
-def charItems(name):
-    logkey = '?fields=items&locale=en_GB&apikey=' + key
+def character_api_request(field, name):
+    logkey = '?fields=' + field + '&locale=en_GB&apikey=' + key
     iri = base + name + logkey
-    url = iriToUri(iri)
-    req = urllib.urlopen(url)
-    info = json.loads(req.read())
-    return info
-
-
-def charSttics(name):
-    logkey = '?fields=statistics&locale=en_GB&apikey=' + key
-    iri = base + name + logkey
-    url = iriToUri(iri)
+    url = iri_to_uri(iri)
     req = urllib.urlopen(url)
     info = json.loads(req.read())
     return info
@@ -88,7 +85,15 @@ def lastW():
     return lastWeds
 
 
-def main(lck, lck_m, lck_uldir_n, lck_uldir_h):
+def formatted_ratio(hit, total):
+    hit = int(hit)
+    total = int(total)
+    if total == 0:
+        return "-"
+    return "{:.2f}%".format(100 * hit / total)
+
+
+def main(lck, lck_m, lck_uldir_n, lck_uldir_h, lck_pvp):
     tiempo_refresco = 15  # minutos
     last_update = datetime.now() - timedelta(minutes=tiempo_refresco+1)
 
@@ -96,34 +101,41 @@ def main(lck, lck_m, lck_uldir_n, lck_uldir_h):
 
         if datetime.now() - timedelta(minutes=tiempo_refresco) >= last_update:
 
-            miembros = guildMembers()
+            miembros = guild_members()
+
+            # Filtro rango directamente aqui para no pedir demasiada mierda
+            miembros = [miembro for miembro in miembros if int(miembro['rank']) <= 2]  # rank 0 GM, 1 ofic. ...
             lastWeds = lastW()
 
             locks_miembros = list()
+            pvp_chart = list()
             counter = 0
 
-            # miembros = miembros[7:10]  # tests
+            if not production: miembros = miembros[5:8]  # tests
+            print("guild_members to process:", [miembro['name'] for miembro in miembros])
             for miembro in miembros:
+
+                counter = counter + 1
+                print('> Counting dofito {} of {}...'.format(str(counter), len(miembros)))
 
                 # iLvls
                 try:
                     # ITEM LEVEL...
-                    items = charItems(miembro['name'])
+                    items = character_api_request("items", miembro['name'])
                     miembro['ilvl-bags'] = items['items']['averageItemLevel']
                     miembro['ilvl-equipped'] = items['items']['averageItemLevelEquipped']
                     miembro['artifact-lvl'] = items['items']['neck']['azeriteItem']['azeriteLevel']
-                    print(miembro)
+                    # miembro['achievement-points'] = 0  ## initialize achievement points
                 except:
                     print(miembro, 'failed in iLvl')
 
 
                 # dofilock
                 try:
-                    # MYTHICS...
-                    stats = charSttics(miembro['name'])
-                    counter = counter + 1
-                    print('> Counting dofito {} of {}...'.format(str(counter), len(miembros)))
 
+                    stats = character_api_request("statistics", miembro['name'])
+
+                    # MYTHICS...
                     exp_stats = stats['statistics']['subCategories'][5]['subCategories'][7]['statistics']
                     all_dungeons = [dung for dung in exp_stats if "mythic" in dung['name'].lower()]  # todas kills, OJO tambien raids
                     for dung in all_dungeons:
@@ -145,15 +157,41 @@ def main(lck, lck_m, lck_uldir_n, lck_uldir_h):
                     locks_miembros.append({"name": miembro['name'], "rank": miembro['rank'], "locks": dungeons_locked,
                                           "uldir_normal": ulduir_normal_locked, "uldir_heroic": ulduir_heroic_locked})
 
+                    # # More INFO from statistics
+                    # miembro['achievement-points'] = stats['achievementPoints']
+                    print(miembro)
+
                 except:
-                    print(miembro, 'failed in locks')
+                    print('>>>', miembro, 'failed in statistics')
+
+
+                # pvp
+                try:
+                    pvp = character_api_request("pvp", miembro['name'])
+
+                    pvp_member = dict()
+                    pvp_member['name'] = pvp['name']
+                    pvp_member['2v2'] = pvp['pvp']['brackets']['ARENA_BRACKET_2v2']
+                    pvp_member['3v3'] = pvp['pvp']['brackets']['ARENA_BRACKET_3v3']
+
+                    pvp_member['2v2']['week_ratio'] = formatted_ratio(pvp_member['2v2']['weeklyWon'], pvp_member['2v2']['weeklyPlayed'])
+                    pvp_member['2v2']['season_ratio'] = formatted_ratio(pvp_member['2v2']['seasonWon'], pvp_member['2v2']['seasonPlayed'])
+
+                    pvp_member['3v3']['week_ratio'] = formatted_ratio(pvp_member['3v3']['weeklyWon'], pvp_member['3v3']['weeklyPlayed'])
+                    pvp_member['3v3']['season_ratio'] = formatted_ratio(pvp_member['3v3']['seasonWon'], pvp_member['3v3']['seasonPlayed'])
+
+                    pvp_chart.append(pvp_member)
+                except Exception as e:
+                    print('>>>', miembro, 'failed in pvp')
+                    print(str(e))
 
             lck.acquire()
+            print("Pillo")
             with open(json_file_ilvls, 'w+') as f:
                 f.write(json.dumps(miembros, ensure_ascii=False).encode('utf-8'))
                 print(miembros)
-                print("GUARDOOOOOOOOOOOOOOOOOOO")
             lck.release()
+            print("Suelto")
 
             dungeons = [dung['name'] for dung in all_dungeons]  # mithics
             bosses_uldir_normal = [boss['name'] for boss in uldir_normal]
@@ -191,6 +229,11 @@ def main(lck, lck_m, lck_uldir_n, lck_uldir_h):
             with open(json_file_uldir_heroic, 'w+') as f:
                 f.write(json.dumps(uldir_heroic_players_locked, ensure_ascii=False).encode('utf-8'))
             lck_uldir_h.release()
+
+            lck_pvp.acquire()
+            with open(json_file_pvp, 'w+') as f:
+                f.write(json.dumps(pvp_chart, ensure_ascii=False).encode('utf-8'))
+            lck_pvp.release()
 
             last_update = datetime.now()
             print("File updated", datetime.strftime(last_update, "%H:%M:%S"))

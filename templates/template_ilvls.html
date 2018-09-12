@@ -18,35 +18,34 @@
     <p>Info personajes miembros Dofitos: Consulta info de los miembros del clan de Wow "By the Rage of my Balls", en
         servidor C'thun.</p>
     <br>
-    <div class="container">
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th scope="col">Name</th>
-                <th scope="col">Lvl</th>
-                <th scope="col">iLvl equipado</th>
-                <th scope="col">iLvl en bolsas</th>
-                <th scope="col">artifact Lvl neck</th>
-                <th scope="col">achievement points</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for member in members %}
-            <tr>
-                <th scope="row">{{member['name']}}</th>
-                <td>{{member['level']}}</td>
-                <td>{{member['ilvl-equipped']}}</td>
-                <td>{{member['ilvl-bags']}}</td>
-                <td>{{member['artifact-lvl']}}</td>
-                <td>{{member['achievementPoints']}}</td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Lvl</th>
+            <th scope="col">iLvl equipado</th>
+            <th scope="col">iLvl en bolsas</th>
+            <th scope="col">artifact Lvl neck</th>
+            <!--<th scope="col">achievement points</th>-->
+        </tr>
+        </thead>
+        <tbody>
+        {% for member in members %}
+        <tr>
+            <th scope="row">{{member['name']}}</th>
+            <td>{{member['level']}}</td>
+            <td>{{member['ilvl-equipped']}}</td>
+            <td>{{member['ilvl-bags']}}</td>
+            <td>{{member['artifact-lvl']}}</td>
+            <!--<td>{{member['achievement-points']}}</td>-->
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
     <br>
     <h4>Update notes</h4>
     <p>* update v0.1: se traga caracteres no ascii en nombres. sort by ilvl.</p>
     <p>* update v0.2: +artifact lvl. filtro gente rango inferior a Guru. table aspect.</p>
+    <p>* update v0.3: muestra personajes en los 3 ranks -ingame- más altos de la guild. removed achiev-points. added error page</p>
 </div>
 {% endblock %}

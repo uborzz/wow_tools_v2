@@ -1,0 +1,78 @@
+{% extends "layout.html" %}
+
+{% block heading %}
+    <title>Dofitos PVP</title>
+    <style type="text/css">
+      .table td {
+        text-align: center;
+      }
+      .table th {
+        text-align: center;
+      }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>PVP info</h1>
+    <p>Arenas Dofitos: Consulta info sobre arenas de los miembros del clan de Wow "By the Rage of my Balls", en
+        servidor C'thun.</p>
+    <p>Se da la info de rating actual, además de número arenas jugadas y % de victorias tanto para la semana (W) como para la season actual entera (S) </p>
+    <br>
+    <h2>Arenas 2v2</h2>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">rating</th>
+            <th scope="col">played (W)</th>
+            <th scope="col">win% (W)</th>
+            <th scope="col">played (S)</th>
+            <th scope="col">win% (S)</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for data_2v2 in data_2v2 %}
+        <tr>
+            <th scope="row">{{data_2v2['name']}}</th>
+            <td>{{data_2v2['2v2']['rating']}}</td>
+            <td>{{data_2v2['2v2']['weeklyPlayed']}}</td>
+            <td>{{data_2v2['2v2']['week_ratio']}}</td>
+            <td>{{data_2v2['2v2']['seasonPlayed']}}</td>
+            <td>{{data_2v2['2v2']['season_ratio']}}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <br>
+    <h2>Arenas 3v3</h2>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">rating</th>
+            <th scope="col">played (W)</th>
+            <th scope="col">win% (W)</th>
+            <th scope="col">played (S)</th>
+            <th scope="col">win% (S)</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for data_3v3 in data_3v3 %}
+        <tr>
+            <th scope="row">{{data_3v3['name']}}</th>
+            <th>{{data_3v3['3v3']['rating']}}</th>
+            <td>{{data_3v3['3v3']['weeklyPlayed']}}</td>
+            <td>{{data_3v3['3v3']['week_ratio']}}</td>
+            <td>{{data_3v3['3v3']['seasonPlayed']}}</td>
+            <td>{{data_3v3['3v3']['season_ratio']}}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <br>
+    <!--<h4>Update notes</h4>-->
+
+</div>
+{% endblock %}
